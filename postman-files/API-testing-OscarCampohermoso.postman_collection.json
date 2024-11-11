@@ -1,0 +1,753 @@
+{
+	"info": {
+		"_postman_id": "07ef0065-abe4-4282-8587-02fb585e5e94",
+		"name": "API-testing-OscarCampohermoso",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33510073"
+	},
+	"item": [
+		{
+			"name": "Crear Usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"email\", jsonData.Email);\r",
+							"pm.environment.set(\"username\", jsonData.FullName);\r",
+							"pm.environment.set(\"user_id\", jsonData.Id); "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Generar un nombre completo aleatorio\r",
+							"function generateRandomFullName() {\r",
+							"    const firstNames = [\"Alex\", \"Taylor\", \"Jordan\", \"Morgan\", \"Casey\", \"Riley\", \"Sydney\", \"Peyton\"];\r",
+							"    const lastNames = [\"Smith\", \"Johnson\", \"Williams\", \"Brown\", \"Jones\", \"Garcia\", \"Miller\", \"Davis\"];\r",
+							"    let randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];\r",
+							"    let randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];\r",
+							"    return `${randomFirstName} ${randomLastName}`;\r",
+							"}\r",
+							"let fullNameGenerated = generateRandomFullName();\r",
+							"\r",
+							"pm.collectionVariables.set(\"randomFullName\", fullNameGenerated);\r",
+							"let emailGenerated = fullNameGenerated.replace(/\\s+/g, '_').toLowerCase() + '@example.com';\r",
+							"pm.collectionVariables.set(\"emailGenerated\", emailGenerated);\r",
+							"\r",
+							"// Mostrar en la consola de Postman para verificación\r",
+							"console.log(\"Generated Email:\", emailGenerated);\r",
+							"console.log(\"Generated Full Name:\", fullNameGenerated);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Email\": \"{{emailGenerated}}\",\r\n  \"FullName\": \"{{randomFullName}}\",\r\n  \"Password\": \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/user.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"user.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /Projects",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"projectGenerated\", \"Project_\" + new Date().getTime());",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"project_id\", jsonData.Id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"Content\": \"{{projectGenerated}}\",\n  \"Icon\": 4\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/projects.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"projects.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /Items 1rs item",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"itemGenerated\", \"Item_\" + new Date().getTime());",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"item_id\", jsonData.Id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"Content\": \"{{itemGenerated}}\",\n  \"ProjectId\": {{project_id}},\n  \"Priority\": 4\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/items.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /Items 2nd item",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"itemGenerated\", \"Item_\" + new Date().getTime());",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"item_id\", jsonData.Id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"Content\": \"{{itemGenerated}}\",\n  \"ProjectId\": {{project_id}},\n  \"Priority\": 4\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/items.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /Items 3rd item",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"itemGenerated\", \"Item_\" + new Date().getTime());",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"item_id\", jsonData.Id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"Content\": \"{{itemGenerated}}\",\n  \"ProjectId\": {{project_id}},\n  \"Priority\": 4\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/items.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /Items/Id",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"Checked\": true\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/items/{{item_id}}.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"items",
+						"{{item_id}}.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /Filters",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}api/filters.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"filters.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "* GET /Filters/Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"El código de estado es 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"El tiempo de respuesta es menor a 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"El contenido del filtro es una cadena de texto\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.Content).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"El tipo de ítem es 4 (Filtro)\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.ItemType).to.eqls(4);",
+							"});",
+							"",
+							"pm.test(\"El ID del filtro es un número negativo\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.Id).to.be.below(0);",
+							"});",
+							"",
+							"pm.test(\"El número de ítems es un número entero\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.ItemsCount).to.be.a('number');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}api/filters/-1.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"filters",
+						"-1.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "* GET /Filters/Id/Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"El código de estado es 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"El tiempo de respuesta es menor a 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"La respuesta es una lista de ítems\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"});",
+							"",
+							"pm.test(\"Verificar que cada ítem tenga el OwnerId igual a {{user_id}}\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var userId = pm.variables.get(\"user_id\");",
+							"    if (jsonData.length === 0) {",
+							"        pm.expect(jsonData.length, \"La lista de ítems está vacía.\").to.be.above(0);",
+							"    } else {",
+							"        jsonData.forEach(function(item) {",
+							"            pm.expect(item.OwnerId, `El ítem con ID ${item.Id} tiene un OwnerId diferente al esperado. OwnerId actual: ${item.OwnerId}`).to.eqls(parseInt(userId));",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verificar que cada ítem tenga un ID válido\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length, \"La lista de ítems está vacía.\").to.be.above(0);",
+							"    jsonData.forEach(function(item) {",
+							"        pm.expect(item.Id, `El ítem con contenido '${item.Content}' tiene un ID no válido: ${item.Id}`).to.be.a('number').and.to.be.above(0);",
+							"    });",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}api/filters/-2/items.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"filters",
+						"-2",
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "* GET /Filters/Id/DoneItems",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"El código de estado es 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"El tiempo de respuesta es menor a 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"La respuesta es una lista de ítems completados\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"});",
+							"",
+							"pm.test(\"Verificar que cada ítem tenga el OwnerId igual a {{user_id}}\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var userId = pm.variables.get(\"user_id\");",
+							"    if (jsonData.length === 0) {",
+							"        pm.expect(jsonData.length, \"La lista de ítems está vacía.\").to.be.above(0);",
+							"    } else {",
+							"        jsonData.forEach(function(item) {",
+							"            pm.expect(item.OwnerId, `El ítem con ID ${item.Id} tiene un OwnerId diferente al esperado. OwnerId actual: ${item.OwnerId}`).to.eqls(parseInt(userId));",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Verificar que cada ítem tenga un ID válido\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length, \"La lista de ítems está vacía.\").to.be.above(0);",
+							"    jsonData.forEach(function(item) {",
+							"        pm.expect(item.Id, `El ítem con contenido '${item.Content}' tiene un ID no válido: ${item.Id}`).to.be.a('number').and.to.be.above(0);",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Verificar ítems completados\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.length === 0) {",
+							"        pm.expect(jsonData.length, \"La lista de ítems completados está vacía.\").to.be.above(0);",
+							"    } else {",
+							"        jsonData.forEach(function(item) {",
+							"            pm.expect(item.Checked, `El ítem con ID ${item.Id} no está marcado como completado.`).to.eqls(true);",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}api/filters/-2/doneitems.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"filters",
+						"-2",
+						"doneitems.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "* GET /Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"El código de estado es 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"El tiempo de respuesta es menor a 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"La respuesta es una lista de ítems\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"});",
+							"",
+							"pm.test(\"Verificar que cada ítem tenga el OwnerId igual a {{user_id}}\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var userId = pm.variables.get(\"user_id\");",
+							"    if (jsonData.length === 0) {",
+							"        pm.expect(jsonData.length, \"La lista de ítems está vacía.\").to.be.above(0);",
+							"    } else {",
+							"        jsonData.forEach(function(item) {",
+							"            pm.expect(item.OwnerId, `El ítem con ID ${item.Id} tiene un OwnerId diferente al esperado. OwnerId actual: ${item.OwnerId}`).to.eqls(parseInt(userId));",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Cada ítem tiene un ID y contenido válidos\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length, \"La lista de ítems está vacía.\").to.be.above(0);",
+							"    jsonData.forEach(function(item, index) {",
+							"        pm.expect(item.Id, `El ítem en la posición ${index} tiene un 'Id' no válido: ${item.Id}`).to.be.a('number').and.to.be.above(0);",
+							"        pm.expect(item.Content, `El ítem en la posición ${index} tiene un 'Content' no válido: ${item.Content}`).to.be.a('string').and.to.not.be.empty;",
+							"    });",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}api/items.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "emailGenerated",
+			"value": ""
+		},
+		{
+			"key": "randomFullName",
+			"value": ""
+		},
+		{
+			"key": "randomPassword",
+			"value": ""
+		}
+	]
+}

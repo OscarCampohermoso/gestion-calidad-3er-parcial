@@ -1,0 +1,356 @@
+\documentclass{report}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}  % For including images
+\usepackage{titling}   % For customizing the title
+\usepackage{lipsum}    % For generating placeholder text (optional)
+\input{restful}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, throw, try, typeof, var, void, while, with},
+  morekeywords={class, const, export, extends, import, let, super},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]"
+}
+
+
+% Configuracion de lstlisting
+\lstset{
+  inputencoding=utf8,
+  extendedchars=true,
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1,
+  language=JavaScript,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue}\bfseries,
+  stringstyle=\color{red},
+  commentstyle=\color{gray},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  backgroundcolor=\color{lightgray!20},
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  tabsize=2,
+  breaklines=true,
+  breakatwhitespace=true,
+  title=\lstname,
+  escapeinside={(*@}{@*)},
+  morekeywords={pm, expect, test, response, json, var} % Additional keywords
+}
+
+
+% Title and author information
+\title{Tercer Parcial: Pruebas de API y Pruebas E2E en Todo.ly}
+\author{Oscar Campohermoso Berdeja}
+\newcommand{\affiliation}{Universidad Católica Boliviana}
+\newcommand{\course}{SIS-312: Gestión de Calidad de Sistemas}
+\newcommand{\professor}{Lic. Cecilia Alvarado Monrroy}
+
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \includegraphics[width=0.8\textwidth]{./imgs/logo-ucb.png}\par
+    {\Huge \textbf{\thetitle}\par}
+    \vspace{0.5cm} % Adjust space between title and author
+    {\Large {\theauthor}\par}
+    \vspace{0.5cm} % Adjust space between author and affiliation
+    {\Large {\affiliation}\par}
+    \vspace{0.5cm} % Adjust space between affiliation and course
+    {\Large {\course}\par}
+    \vspace{0.5cm} % Adjust space between course and professor
+    {\Large {Profesor: \professor}\par}
+    \vspace{0.5cm} % Adjust space before date
+    {\Large \today\par}
+\end{titlepage}
+
+\tableofcontents
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% API Testing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{API Testing}
+
+Este capítulo describe el proceso de pruebas de API realizadas en el servicio de Todo.ly. Estas pruebas se llevaron a cabo para verificar la correcta funcionalidad, rendimiento y estructura de las respuestas de los endpoints seleccionados.
+
+\section{Resumen de Ejecución de Pruebas}
+Las pruebas se ejecutaron utilizando la herramienta Newman, que permite correr colecciones de Postman desde la línea de comandos. El siguiente es un resumen de la ejecución:
+
+\begin{verbatim}
+> newman run API-testing-OscarCampohermoso.postman_collection.json -e 
+QAenv-OscarCampohermoso.postman_environment.json --color off
+
+API-testing-OscarCampohermoso
+
+-> Crear Usuario
+  | 'Generated Email:', 'taylor_johnson@example.com'
+  | 'Generated Full Name:', 'Taylor Johnson'
+  POST https://todo.ly/api/user.json [200 OK, 705B, 1037ms]
+
+-> POST /Projects
+  POST https://todo.ly/api/projects.json [200 OK, 721B, 229ms]
+
+-> POST /Items 1rs item
+  POST https://todo.ly/api/items.json [200 OK, 851B, 232ms]
+
+-> POST /Items 2nd item
+  POST https://todo.ly/api/items.json [200 OK, 851B, 247ms]
+
+-> POST /Items 3rd item
+  POST https://todo.ly/api/items.json [200 OK, 851B, 249ms]
+
+-> PUT /Items/Id
+  PUT https://todo.ly/api/items/11600340.json [200 OK, 870B, 232ms]
+
+-> GET /Filters
+  GET https://todo.ly/api/filters.json [200 OK, 637B, 227ms]
+
+-> * GET /Filters/Id
+  GET https://todo.ly/api/filters/-1.json [200 OK, 390B, 228ms]
+  -  El código de estado es 200
+  -  El tiempo de respuesta es menor a 2000ms
+  -  El contenido del filtro es una cadena de texto
+  -  El tipo de ítem es 4 (Filtro)
+  -  El ID del filtro es un número negativo
+  -  El número de ítems es un número entero
+
+-> * GET /Filters/Id/Items
+  GET https://todo.ly/api/filters/-2/items.json [200 OK, 1.39kB, 234ms]
+  -  El código de estado es 200
+  -  El tiempo de respuesta es menor a 2000ms
+  -  La respuesta es una lista de ítems
+  -  Verificar que cada ítem tenga el OwnerId igual a {{user_id}}
+  -  Verificar que cada ítem tenga un ID válido
+
+-> * GET /Filters/Id/DoneItems
+  GET https://todo.ly/api/filters/-2/doneitems.json [200 OK, 872B, 228ms]
+  -  El código de estado es 200
+  -  El tiempo de respuesta es menor a 2000ms
+  -  La respuesta es una lista de ítems completados
+  -  Verificar que cada ítem tenga el OwnerId igual a {{user_id}}
+  -  Verificar que cada ítem tenga un ID válido
+  -  Verificar ítems completados
+
+-> * GET /Items
+  GET https://todo.ly/api/items.json [200 OK, 1.95kB, 226ms]
+  -  El código de estado es 200
+  -  El tiempo de respuesta es menor a 2000ms
+  -  La respuesta es una lista de ítems
+  -  Verificar que cada ítem tenga el OwnerId igual a {{user_id}}
+  -  Cada ítem tiene un ID y contenido válidos
+\end{verbatim}
+
+\section{Descripción de las Pruebas}
+Las pruebas se diseñaron para los siguientes endpoints, y como se observa en el resumen de la ejecución de pruebas, se llevaron a cabo con éxito. Cada prueba fue planificada para verificar tanto la estructura de las respuestas como la consistencia y validez de los datos retornados por la API.
+
+\subsection{GET /Filters/Id}
+Este endpoint devuelve los detalles de un filtro específico y se validaron los siguientes aspectos:
+\begin{itemize}
+    \item Código de estado 200 \checkmark
+    \item Tiempo de respuesta menor a 2000 ms \checkmark
+    \item El contenido del filtro es una cadena de texto \checkmark
+    \item El tipo de ítem es 4 (Filtro) \checkmark
+    \item El ID del filtro es un número negativo \checkmark
+    \item El número de ítems es un número entero \checkmark
+\end{itemize}
+
+Este endpoint permite al usuario obtener detalles sobre filtros específicos, como los que muestran las tareas de hoy o próximas. Verificar la integridad de estos datos es crucial para la correcta visualización de la información en la interfaz.
+
+\begin{lstlisting}
+pm.test("El código de estado es 200", function () {
+    pm.response.to.have.status(200);
+});
+
+pm.test("El tiempo de respuesta es menor a 2000ms", function () {
+    pm.expect(pm.response.responseTime).to.be.below(2000);
+});
+
+pm.test("El contenido del filtro es una cadena de texto", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.Content).to.be.a('string');
+});
+
+pm.test("El tipo de ítem es 4 (Filtro)", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.ItemType).to.eqls(4);
+});
+
+pm.test("El ID del filtro es un número negativo", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.Id).to.be.below(0);
+});
+
+pm.test("El número de ítems es un número entero", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.ItemsCount).to.be.a('number');
+});
+\end{lstlisting}
+
+\subsection{GET /Filters/Id/Items}
+Este endpoint devuelve la lista de ítems asociados a un filtro específico. Las validaciones incluyen:
+\begin{itemize}
+    \item Código de estado 200 \checkmark
+    \item Tiempo de respuesta menor a 2000 ms \checkmark
+    \item La respuesta es una lista de ítems \checkmark
+    \item Cada ítem tiene un OwnerId igual a \{\{user\_id\}\} $\checkmark$
+    \item Cada ítem tiene un ID válido \checkmark
+\end{itemize}
+
+Este endpoint es útil para listar las tareas filtradas por un criterio específico, como las tareas que deben realizarse hoy. Las pruebas aseguran que cada ítem en la lista esté correctamente asociado al usuario autenticado.
+
+\begin{lstlisting}
+pm.test("El código de estado es 200", function () {
+    pm.response.to.have.status(200);
+});
+
+pm.test("El tiempo de respuesta es menor a 2000ms", function () {
+    pm.expect(pm.response.responseTime).to.be.below(2000);
+});
+
+pm.test("La respuesta es una lista de ítems", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData).to.be.an('array');
+});
+
+pm.test("Verificar que cada ítem tenga el OwnerId igual a {{user_id}}", function () {
+    var jsonData = pm.response.json();
+    var userId = pm.variables.get("user_id");
+    jsonData.forEach(function(item) {
+        pm.expect(item.OwnerId).to.eqls(parseInt(userId));
+    });
+});
+
+pm.test("Verificar que cada ítem tenga un ID válido", function () {
+    var jsonData = pm.response.json();
+    jsonData.forEach(function(item) {
+        pm.expect(item.Id).to.be.a('number').and.to.be.above(0);
+    });
+});
+\end{lstlisting}
+
+\subsection{GET /Filters/Id/DoneItems}
+Este endpoint devuelve la lista de ítems completados asociados a un filtro específico. Las validaciones realizadas fueron:
+\begin{itemize}
+    \item Código de estado 200 \checkmark
+    \item Tiempo de respuesta menor a 2000 ms \checkmark
+    \item La respuesta es una lista de ítems completados \checkmark
+    \item Cada ítem tiene un OwnerId igual a \{\{user\_id\}\} $\checkmark$
+    \item Cada ítem tiene un ID válido \checkmark
+    \item Verificar que los ítems estén marcados como completados \checkmark
+\end{itemize}
+
+Este endpoint permite al usuario ver las tareas que ha completado. Las pruebas aseguran que todos los ítems devueltos estén efectivamente marcados como completados y asociados al usuario correcto.
+
+\begin{lstlisting}
+pm.test("El código de estado es 200", function () {
+    pm.response.to.have.status(200);
+});
+
+pm.test("El tiempo de respuesta es menor a 2000ms", function () {
+    pm.expect(pm.response.responseTime).to.be.below(2000);
+});
+
+pm.test("La respuesta es una lista de ítems completados", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData).to.be.an('array');
+});
+
+pm.test("Verificar que cada ítem tenga el OwnerId igual a {{user_id}}", function () {
+    var jsonData = pm.response.json();
+    var userId = pm.variables.get("user_id");
+    jsonData.forEach(function(item) {
+        pm.expect(item.OwnerId).to.eqls(parseInt(userId));
+    });
+});
+
+pm.test("Verificar que cada ítem tenga un ID válido", function () {
+    var jsonData = pm.response.json();
+    jsonData.forEach(function(item) {
+        pm.expect(item.Id).to.be.a('number').and.to.be.above(0);
+    });
+});
+
+pm.test("Verificar ítems completados", function () {
+    var jsonData = pm.response.json();
+    jsonData.forEach(function(item) {
+        pm.expect(item.Checked).to.eqls(true);
+    });
+});
+\end{lstlisting}
+
+\subsection{GET /Items}
+Este endpoint devuelve la lista de todos los ítems del usuario autenticado. Las pruebas realizadas fueron:
+\begin{itemize}
+    \item Código de estado 200 \checkmark
+    \item Tiempo de respuesta menor a 2000 ms \checkmark
+    \item La respuesta es una lista de ítems \checkmark
+    \item Cada ítem tiene un OwnerId igual a \{\{user\_id\}\} $\checkmark$
+    \item Cada ítem tiene un ID y contenido válidos \checkmark
+\end{itemize}
+
+Este endpoint es fundamental para mostrar todas las tareas de un usuario y comprobar que los datos devueltos sean correctos y completos.
+
+\begin{lstlisting}
+pm.test("El código de estado es 200", function () {
+    pm.response.to.have.status(200);
+});
+
+pm.test("El tiempo de respuesta es menor a 2000ms", function () {
+    pm.expect(pm.response.responseTime).to.be.below(2000);
+});
+
+pm.test("La respuesta es una lista de ítems", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData).to.be.an('array');
+});
+
+pm.test("Verificar que cada ítem tenga el OwnerId igual a {{user_id}}", function () {
+    var jsonData = pm.response.json();
+    var userId = pm.variables.get("user_id");
+    jsonData.forEach(function(item) {
+        pm.expect(item.OwnerId).to.eqls(parseInt(userId));
+    });
+});
+
+pm.test("Cada ítem tiene un ID y contenido válidos", function () {
+    var jsonData = pm.response.json();
+    jsonData.forEach(function(item) {
+        pm.expect(item.Id).to.be.a('number').and.to.be.above(0);
+        pm.expect(item.Content).to.be.a('string').and.to.not.be.empty;
+    });
+});
+\end{lstlisting}
+
+\section{Conclusión}
+Las pruebas realizadas sobre los endpoints de la API de Todo.ly han demostrado que el sistema responde correctamente bajo las condiciones esperadas, manteniendo un tiempo de respuesta adecuado y proporcionando datos precisos. Las validaciones realizadas aseguran que la integridad de los datos y la experiencia del usuario sean consistentes y fiables.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Pruebas E2E
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Pruebas E2E}
+Este capítulo aborda las pruebas end-to-end (E2E) diseñadas para verificar flujos completos de usuario en la aplicación Todo.ly. Estas pruebas aseguran que las diferentes funcionalidades trabajen correctamente en conjunto.
+
+\section{Casos de Prueba E2E}
+\subsection{Creación de una Tarea}
+Prueba diseñada para confirmar que un usuario puede crear una nueva tarea y que esta se refleje en la lista de tareas.
+
+\subsection{Completado de una Tarea}
+Prueba que valida que un usuario pueda marcar una tarea como completada y que su estado se actualice correctamente en la interfaz.
+
+\end{document}
