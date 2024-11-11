@@ -1,4 +1,4 @@
-# Proyecto de Pruebas de API y E2E en Todo.ly
+# Proyecto de Pruebas de API y E2E
 
 Este repositorio contiene:
 
