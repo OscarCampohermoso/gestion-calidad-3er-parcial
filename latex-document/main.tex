@@ -11,6 +11,7 @@
 \usepackage{graphicx}  % For including images
 \usepackage{titling}   % For customizing the title
 \usepackage{lipsum}    % For generating placeholder text (optional)
+\usepackage{hyperref}
 \input{restful}
 
 \lstdefinelanguage{JavaScript}{
@@ -48,7 +49,7 @@
   breakatwhitespace=true,
   title=\lstname,
   escapeinside={(*@}{@*)},
-  morekeywords={pm, expect, test, response, json, var} % Additional keywords
+  morekeywords={pm, expect, test, response, json, var, async, await, this} % Additional keywords
 }
 
 
@@ -79,16 +80,17 @@
 \end{titlepage}
 
 \tableofcontents
+\listoffigures
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %% API Testing
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{API Testing}
 
-Este capítulo describe el proceso de pruebas de API realizadas en el servicio de Todo.ly. Estas pruebas se llevaron a cabo para verificar la correcta funcionalidad, rendimiento y estructura de las respuestas de los endpoints seleccionados.
+Este capítulo describe el proceso sistemático de pruebas de API realizadas sobre el servicio de Todo.ly. El objetivo principal de estas pruebas fue evaluar la funcionalidad, el rendimiento y la estructura de las respuestas en los endpoints seleccionados. Este ejercicio refleja una metodología estructurada para garantizar la confiabilidad y calidad del sistema, a través de pruebas de API automatizadas.
 
 \section{Resumen de Ejecución de Pruebas}
-Las pruebas se ejecutaron utilizando la herramienta Newman, que permite correr colecciones de Postman desde la línea de comandos. El siguiente es un resumen de la ejecución:
+Las pruebas realizadas en Postman se ejecutaron utilizando la herramienta Newman, que permite correr colecciones de Postman desde la línea de comandos. El siguiente es un resumen de la ejecución:
 
 \begin{verbatim}
 > newman run API-testing-OscarCampohermoso.postman_collection.json -e 
@@ -154,6 +156,8 @@ API-testing-OscarCampohermoso
   -  Cada ítem tiene un ID y contenido válidos
 \end{verbatim}
 
+\clearpage
+
 \section{Descripción de las Pruebas}
 Las pruebas se diseñaron para los siguientes endpoints, y como se observa en el resumen de la ejecución de pruebas, se llevaron a cabo con éxito. Cada prueba fue planificada para verificar tanto la estructura de las respuestas como la consistencia y validez de los datos retornados por la API.
 
@@ -199,6 +203,13 @@ pm.test("El número de ítems es un número entero", function () {
     pm.expect(jsonData.ItemsCount).to.be.a('number');
 });
 \end{lstlisting}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{./imgs/tc1postman.png}
+    \caption{Resultado de la prueba GET /Filters/Id en Postman}
+    \label{fig:tc1postman} 
+\end{figure}
+
 
 \subsection{GET /Filters/Id/Items}
 Este endpoint devuelve la lista de ítems asociados a un filtro específico. Las validaciones incluyen:
@@ -241,6 +252,13 @@ pm.test("Verificar que cada ítem tenga un ID válido", function () {
     });
 });
 \end{lstlisting}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{./imgs/tc2postman.png}
+    \caption{Resultado de la prueba GET /Filters/Id/Items en Postman}
+    \label{fig:tc2postman}
+\end{figure}
 
 \subsection{GET /Filters/Id/DoneItems}
 Este endpoint devuelve la lista de ítems completados asociados a un filtro específico. Las validaciones realizadas fueron:
@@ -292,6 +310,13 @@ pm.test("Verificar ítems completados", function () {
 });
 \end{lstlisting}
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{./imgs/tc3postman.png}
+    \caption{Resultado de la prueba GET /Filters/Id/DoneItems en Postman}
+    \label{fig:tc2postman}
+\end{figure}
+
 \subsection{GET /Items}
 Este endpoint devuelve la lista de todos los ítems del usuario autenticado. Las pruebas realizadas fueron:
 \begin{itemize}
@@ -335,22 +360,100 @@ pm.test("Cada ítem tiene un ID y contenido válidos", function () {
 });
 \end{lstlisting}
 
-\section{Conclusión}
-Las pruebas realizadas sobre los endpoints de la API de Todo.ly han demostrado que el sistema responde correctamente bajo las condiciones esperadas, manteniendo un tiempo de respuesta adecuado y proporcionando datos precisos. Las validaciones realizadas aseguran que la integridad de los datos y la experiencia del usuario sean consistentes y fiables.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{./imgs/tc4postman.png}
+    \caption{Resultado de la prueba GET /Items en Postman}
+    \label{fig:tc2postman}
+\end{figure}
 
+\section{Conclusión}
+El proceso de pruebas de API permitió evaluar la estabilidad, confiabilidad y calidad de los endpoints de Todo.ly, enfocándose en tiempo de respuesta, validez de datos e integridad estructural. Este ejercicio destaca un enfoque sistemático para validar la funcionalidad de una API.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %% Pruebas E2E
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Pruebas E2E}
-Este capítulo aborda las pruebas end-to-end (E2E) diseñadas para verificar flujos completos de usuario en la aplicación Todo.ly. Estas pruebas aseguran que las diferentes funcionalidades trabajen correctamente en conjunto.
+
+Este capítulo aborda las pruebas end-to-end (E2E) diseñadas para verificar flujos completos de usuario en la aplicación Todo.ly. Estas pruebas aseguran que las diferentes funcionalidades trabajen correctamente en conjunto y que el sistema mantenga su integridad durante la interacción con múltiples componentes.
 
 \section{Casos de Prueba E2E}
-\subsection{Creación de una Tarea}
-Prueba diseñada para confirmar que un usuario puede crear una nueva tarea y que esta se refleje en la lista de tareas.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{./imgs/playwright/Captura de pantalla 2024-11-17 a la(s) 21.49.35.png}
+    \caption{Reporte de ambas pruebas E2E en Playwright en multiples navegadores}
+    \label{fig:tcsplaywright}
+\end{figure}
 
-\subsection{Completado de una Tarea}
-Prueba que valida que un usuario pueda marcar una tarea como completada y que su estado se actualice correctamente en la interfaz.
+Se llevaron a cabo dos pruebas en el módulo de tareas de la aplicación Todo.ly. Estas pruebas fueron diseñadas para evaluar la interacción entre las diferentes funciones de la aplicación. A continuación, se describen los casos realizados:
+
+\subsection{Editar el Penúltimo Ítem en \texttt{Work} y Asignarle Prioridad}
+
+Este caso de prueba verifica que un usuario pueda editar una tarea existente dentro del proyecto \texttt{Work}, asignándole prioridad correctamente. Los pasos principales incluyen:
+\begin{itemize}
+    \item Navegar hasta la lista de tareas en el proyecto \texttt{Work}.
+    \item Seleccionar el penúltimo ítem.
+    \item Abrir el menú de opciones.
+    \item Asignar la prioridad esperada al ítem.
+\end{itemize}
+
+La prueba asegura que el cambio de prioridad se refleje visualmente mediante un cambio de color en la tarea editada. Este comportamiento fue validado con la herramienta Playwright. A continuación, el código de la prueba:
+
+\begin{lstlisting}
+    async openPenultimateTodoItemPriorityMenu() {
+        await this.penultimateTodoItemLI.hover();
+        await this.penultimateTodoItemMoreOptionsButton.click();
+        await this.penultimateTodoItemPriorityButton.click();
+    
+        // Esperar a que el color cambie a 'rgb(22, 139, 184)'
+        await expect(this.penultimateTodoItemLI.locator('.ItemContentDiv')).toHaveCSS('color', 'rgb(22, 139, 184)');
+    }
+\end{lstlisting}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{./imgs/playwright/Captura de pantalla 2024-11-17 a la(s) 21.49.52.png}
+    \caption{Resumen de los pasos de la prueba en Playwright, realizados en chromium}
+    \label{fig:tc1playwright}
+\end{figure}
+
+\subsection{Eliminar el Segundo Ítem}
+
+Este caso de prueba valida que un usuario pueda eliminar correctamente una tarea específica, en este caso el segundo ítem de la lista de tareas. Los pasos principales incluyen:
+\begin{itemize}
+    \item Navegar hasta la lista de tareas.
+    \item Seleccionar el segundo ítem.
+    \item Abrir el menú de opciones.
+    \item Eliminar la tarea seleccionada.
+\end{itemize}
+
+La prueba asegura que el ítem eliminado desaparezca de la lista y que no mantenga atributos residuales en el sistema. A continuación, el código de la prueba:
+
+\begin{lstlisting}
+    async deleteSecondTodoItem() {
+        const itemIdOfSecondTodoItem = await this.secondTodoItemLI.getAttribute('itemid');
+    
+        if (itemIdOfSecondTodoItem === null) {
+            throw new Error('Second todo item does not have an itemid attribute');
+        }
+    
+        await this.secondTodoItemLI.hover();
+        await this.secondTodoItemMoreOptionsButton.click();
+        await this.secondTodoItemDeleteButton.click();
+    
+        // Esperar a que el elemento ya no tenga el atributo 'itemid'
+        await expect(this.secondTodoItemLI).not.toHaveAttribute('itemid', itemIdOfSecondTodoItem);
+    }
+\end{lstlisting}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{./imgs/playwright/Captura de pantalla 2024-11-17 a la(s) 21.50.05.png}
+    \caption{Resumen de los pasos de la prueba en Playwright, realizados en firefox}
+    \label{fig:tc1playwright}
+\end{figure}
+\section{Conclusión}
+
+Las pruebas E2E realizadas demuestran que las funcionalidades clave de Todo.ly operan correctamente en conjunto. Estas pruebas confirman que las tareas pueden ser editadas y eliminadas de manera efectiva, asegurando que los cambios realizados por el usuario se reflejen consistentemente en la interfaz. La implementación de Playwright permitió automatizar los casos de prueba, optimizando su ejecución y validación.
+
 
 \end{document}
