@@ -2,7 +2,7 @@
 
 Este repositorio contiene:
 
-- **Colecciones de Postman**: Para pruebas de API.
+- **Archivos de Postman**: Para pruebas de API.
 - **Documentación en LaTeX**: Descripción detallada de las pruebas.
 
 ## Uso
@@ -10,7 +10,7 @@ Este repositorio contiene:
 1. **Clonar el repositorio**:
 
    ```bash
-   git clone https://github.com/tu-usuario/tu-repositorio.git
+   git clone https://github.com/OscarCampohermoso/gestion-calidad-3er-parcial.git
    ```
 
 2. **Ejecutar pruebas con Newman**:
