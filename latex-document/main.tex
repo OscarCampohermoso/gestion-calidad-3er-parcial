@@ -314,7 +314,7 @@ pm.test("Verificar ítems completados", function () {
     \centering
     \includegraphics[width=0.9\textwidth]{./imgs/tc3postman.png}
     \caption{Resultado de la prueba GET /Filters/Id/DoneItems en Postman}
-    \label{fig:tc2postman}
+    \label{fig:tc3postman}
 \end{figure}
 
 \subsection{GET /Items}
@@ -364,7 +364,7 @@ pm.test("Cada ítem tiene un ID y contenido válidos", function () {
     \centering
     \includegraphics[width=0.9\textwidth]{./imgs/tc4postman.png}
     \caption{Resultado de la prueba GET /Items en Postman}
-    \label{fig:tc2postman}
+    \label{fig:tc4postman}
 \end{figure}
 
 \section{Conclusión}
@@ -382,7 +382,7 @@ Este capítulo aborda las pruebas end-to-end (E2E) diseñadas para verificar flu
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\textwidth]{./imgs/playwright/Captura de pantalla 2024-11-17 a la(s) 21.49.35.png}
-    \caption{Reporte de ambas pruebas E2E en Playwright en multiples navegadores}
+    \caption{Reporte de ambas pruebas E2E en Playwright en múltiples navegadores}
     \label{fig:tcsplaywright}
 \end{figure}
 
@@ -398,21 +398,23 @@ Este caso de prueba verifica que un usuario pueda editar una tarea existente den
     \item Asignar la prioridad esperada al ítem.
 \end{itemize}
 
-La prueba asegura que el cambio de prioridad se refleje visualmente mediante un cambio de color en la tarea editada. Este comportamiento fue validado con la herramienta Playwright. A continuación, el código de la prueba:
+La prueba asegura que el cambio de prioridad se refleje visualmente mediante un cambio de color en la tarea editada. A continuación, el código de la prueba:
 
 \begin{lstlisting}
     async openPenultimateTodoItemPriorityMenu() {
         await this.penultimateTodoItemLI.hover();
         await this.penultimateTodoItemMoreOptionsButton.click();
         await this.penultimateTodoItemPriorityButton.click();
-    
+        await this.loader.waitFor({ state: 'hidden' });
+
         // Esperar a que el color cambie a 'rgb(22, 139, 184)'
-        await expect(this.penultimateTodoItemLI.locator('.ItemContentDiv')).toHaveCSS('color', 'rgb(22, 139, 184)');
+        await expect(this.penultimateTodoItemLI.locator('.ItemContentDiv'))
+        .toHaveCSS('color', 'rgb(22, 139, 184)');
     }
 \end{lstlisting}
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{./imgs/playwright/Captura de pantalla 2024-11-17 a la(s) 21.49.52.png}
+    \includegraphics[width=0.8\textwidth]{./imgs/Captura de pantalla 2024-11-19 a la(s) 12.23.05.png}
     \caption{Resumen de los pasos de la prueba en Playwright, realizados en chromium}
     \label{fig:tc1playwright}
 \end{figure}
@@ -427,7 +429,7 @@ Este caso de prueba valida que un usuario pueda eliminar correctamente una tarea
     \item Eliminar la tarea seleccionada.
 \end{itemize}
 
-La prueba asegura que el ítem eliminado desaparezca de la lista y que no mantenga atributos residuales en el sistema. A continuación, el código de la prueba:
+La prueba asegura que el ítem eliminado desaparezca de la lista y que no mantenga atributos residuales en el sistema. También valida que el mensaje de confirmación se muestre correctamente y que el proceso de eliminación sea manejado sin problemas incluso si involucra múltiples apariciones del cargador (\texttt{loader}). A continuación, el código de la prueba:
 
 \begin{lstlisting}
     async deleteSecondTodoItem() {
@@ -441,19 +443,28 @@ La prueba asegura que el ítem eliminado desaparezca de la lista y que no manten
         await this.secondTodoItemMoreOptionsButton.click();
         await this.secondTodoItemDeleteButton.click();
     
-        // Esperar a que el elemento ya no tenga el atributo 'itemid'
-        await expect(this.secondTodoItemLI).not.toHaveAttribute('itemid', itemIdOfSecondTodoItem);
+        // Wait for the info message to appear
+        await this.messageInfo.waitFor({ state: 'visible' });
+    
+        // Assert the message content
+        await expect(this.messageInfo).toHaveText('Info. Item has been Deleted');
+    
+        // Wait for the loader to disappear (second appearance)
+        await this.loader.waitFor({ state: 'hidden' });
+    
+        // Ensure the item is no longer in the list
+        await expect(this.mainContentTasks).not.toContainText(itemIdOfSecondTodoItem);
     }
 \end{lstlisting}
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{./imgs/playwright/Captura de pantalla 2024-11-17 a la(s) 21.50.05.png}
+    \includegraphics[width=0.7\textwidth]{./imgs/Captura de pantalla 2024-11-19 a la(s) 12.23.18.png}
     \caption{Resumen de los pasos de la prueba en Playwright, realizados en firefox}
-    \label{fig:tc1playwright}
+    \label{fig:tc2playwright}
 \end{figure}
+
 \section{Conclusión}
 
-Las pruebas E2E realizadas demuestran que las funcionalidades clave de Todo.ly operan correctamente en conjunto. Estas pruebas confirman que las tareas pueden ser editadas y eliminadas de manera efectiva, asegurando que los cambios realizados por el usuario se reflejen consistentemente en la interfaz. La implementación de Playwright permitió automatizar los casos de prueba, optimizando su ejecución y validación.
+Las pruebas E2E realizadas demuestran que las funcionalidades clave de Todo.ly operan correctamente en conjunto. Estas pruebas confirman que las tareas pueden ser editadas y eliminadas de manera efectiva, asegurando que los cambios realizados por el usuario se reflejen consistentemente en la interfaz. Además, se validó que el flujo de eliminación maneja correctamente las transiciones entre el mensaje de confirmación y el cargador. La implementación de Playwright permitió automatizar los casos de prueba, optimizando su ejecución y validación.
 
-
-\end{document}
+\end{document} 
