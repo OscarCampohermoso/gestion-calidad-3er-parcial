@@ -467,4 +467,66 @@ La prueba asegura que el ítem eliminado desaparezca de la lista y que no manten
 
 Las pruebas E2E realizadas demuestran que las funcionalidades clave de Todo.ly operan correctamente en conjunto. Estas pruebas confirman que las tareas pueden ser editadas y eliminadas de manera efectiva, asegurando que los cambios realizados por el usuario se reflejen consistentemente en la interfaz. Además, se validó que el flujo de eliminación maneja correctamente las transiciones entre el mensaje de confirmación y el cargador. La implementación de Playwright permitió automatizar los casos de prueba, optimizando su ejecución y validación.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Anexos
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Anexos}
+
+En esta sección se incluyen recursos adicionales relevantes para la implementación, ejecución y análisis de las pruebas de API y pruebas E2E en la aplicación Todo.ly.
+
+\section{Repositorio de Gestión de Calidad}
+
+El repositorio asociado a este trabajo contiene la implementación de las pruebas realizadas en Postman en formato json, así como documentación en formato \LaTeX{}.
+
+\begin{itemize}
+    \item \href{https://github.com/OscarCampohermoso/gestion-calidad-3er-parcial.git}{\texttt{https://github.com/OscarCampohermoso/gestion-calidad-3er-parcial.git}}
+\end{itemize}
+
+\section{Repositorio de Pruebas E2E con Playwright}
+
+Este repositorio incluye el código y configuración necesarios para ejecutar las pruebas E2E en la aplicación Todo.ly utilizando Playwright. Contiene scripts, documentación técnica y configuraciones útiles para replicar el entorno de pruebas. Está disponible en el siguiente enlace:
+
+\begin{itemize}
+    \item \href{https://github.com/CarrascoAlejandro/CALI_TodoLy_Playwright.git}{\texttt{https://github.com/CarrascoAlejandro/CALI\_TodoLy\_Playwright.git}}
+\end{itemize}
+
+\section{Instrucciones para Clonar y Ejecutar los Repositorios}
+
+A continuación, se describen los pasos básicos para clonar y ejecutar los repositorios mencionados:
+
+\subsection{Clonar Repositorios}
+Ejecute los siguientes comandos en su terminal para clonar los repositorios:
+\begin{verbatim}
+# Clonar el repositorio de gestión de calidad
+git clone https://github.com/OscarCampohermoso/gestion-calidad-3er-parcial.git
+
+# Clonar el repositorio de pruebas E2E
+git clone https://github.com/CarrascoAlejandro/CALI_TodoLy_Playwright.git
+\end{verbatim}
+
+\subsection{Ejecución de Pruebas en Playwright}
+1. Instalar las dependencias necesarias:
+\begin{verbatim}
+npm install
+\end{verbatim}
+
+2. Ejecutar las pruebas:
+\begin{verbatim}
+npx playwright test
+\end{verbatim}
+
+\subsection{Ejecución de Pruebas de API con Newman}
+1. Instalar las dependencias necesarias:
+\begin{verbatim}
+npm install -g newman
+\end{verbatim}
+
+2. Ejecutar las colecciones de Postman:
+\begin{verbatim}
+newman run API-testing-OscarCampohermoso.postman_collection.json \
+-e QAenv-OscarCampohermoso.postman_environment.json --color off
+\end{verbatim}
+
 \end{document} 
